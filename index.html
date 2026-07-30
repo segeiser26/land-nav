@@ -109,7 +109,18 @@
       <div class="error-msg" id="raz-error"></div>
     </div>
 
-    <div class="card" id="raz-results-card" style="display:none;">
+    <div class="card">
+      <p class="card-title">Declination (optional)</p>
+      <div class="field-row">
+        <div class="field" style="max-width: 220px;">
+          <label for="raz-decl">Degrees, East(+) / West(&minus;)</label>
+          <input type="text" id="raz-decl" placeholder="e.g. -8.5 or 6.2" inputmode="decimal">
+        </div>
+      </div>
+      <p class="hint">Grid/true azimuth is what the math gives you. Enter your local declination to also see the magnetic azimuth to steer by on a lensatic compass. Leave blank to skip.</p>
+    </div>
+
+    <div class="card" id="raz-results-card">
       <p class="card-title">Result</p>
       <div class="raz-layout">
         <div>
@@ -125,6 +136,14 @@
             <div class="result-box">
               <span class="k">Back Azimuth (B → A)</span>
               <span class="v" id="raz-back-azimuth">—</span>
+            </div>
+            <div class="result-box" id="raz-mag-box" style="display:none;">
+              <span class="k">Magnetic Azimuth (A → B)</span>
+              <span class="v" id="raz-mag-azimuth" style="color: var(--ok);">—</span>
+            </div>
+            <div class="result-box" id="raz-mag-back-box" style="display:none;">
+              <span class="k">Magnetic Back Azimuth</span>
+              <span class="v" id="raz-mag-back-azimuth" style="color: var(--ok);">—</span>
             </div>
             <div class="result-box">
               <span class="k">Distance Units</span>
@@ -152,6 +171,10 @@
             <text x="100" y="182" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--text-dim)">S</text>
             <text x="14" y="104" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--text-dim)">W</text>
             <text x="186" y="104" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--text-dim)">E</text>
+            <g class="dial-needle" id="dial-needle-mag" style="display:none;">
+              <line x1="100" y1="100" x2="100" y2="30" stroke="var(--ok)" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 4"/>
+              <polygon points="100,24 95,36 105,36" fill="var(--ok)"/>
+            </g>
             <g class="dial-needle" id="dial-needle">
               <line x1="100" y1="100" x2="100" y2="26" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
               <polygon points="100,20 94,34 106,34" fill="var(--accent)"/>
@@ -164,6 +187,10 @@
             <div class="unit-toggle seg-control" role="group" aria-label="Azimuth units" style="margin-top:6px;">
               <button class="seg-btn" data-az-unit="deg" aria-pressed="true">DEG</button>
               <button class="seg-btn" data-az-unit="mil" aria-pressed="false">MILS</button>
+            </div>
+            <div class="hint" id="dial-legend" style="margin-top:10px; display:none;">
+              <span style="color:var(--accent);">&#9644;</span> Grid/true &nbsp;
+              <span style="color:var(--ok);">&#8211;&#8211;</span> Magnetic
             </div>
           </div>
         </div>
