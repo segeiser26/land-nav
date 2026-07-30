@@ -1,7 +1,7 @@
 /* ===========================================================
    LAND NAV — stylesheet
    Design language: topographic map overprint. Day mode reads like
-   aged paper with a brick-red grid overprint; NVG mode reads like a
+   aged paper with a brick-red grid overprint; Night mode reads like a
    blacked-out map board lit red so night vision isn't blown.
    =========================================================== */
 
@@ -30,7 +30,7 @@
   --font-mono: 'IBM Plex Mono', monospace;
 }
 
-[data-theme='nvg'] {
+[data-theme='night'] {
   --bg: #0f120c;
   --bg-grid-line: rgba(214, 69, 51, 0.06);
   --panel: #171b11;
