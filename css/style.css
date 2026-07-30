@@ -65,7 +65,6 @@ body {
     var(--topo-pattern);
   background-size: auto, auto, 380px 380px;
   background-repeat: repeat, repeat, repeat;
-  background-attachment: fixed, fixed, fixed;
   color: var(--text);
   font-family: var(--font-body);
   min-height: 100vh;
