@@ -6,7 +6,7 @@
   // ---------------------------------------------------------------
   var body = document.body;
   var btnDay = document.getElementById('btn-mode-day');
-  var btnNvg = document.getElementById('btn-mode-nvg');
+  var btnNvg = document.getElementById('btn-mode-night');
 
   function setTheme(theme) {
     body.setAttribute('data-theme', theme);
