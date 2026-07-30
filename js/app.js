@@ -2,28 +2,28 @@
   'use strict';
 
   // ---------------------------------------------------------------
-  // Theme (DAY / NVG)
+  // Theme (DAY / NIGHT)
   // ---------------------------------------------------------------
   var body = document.body;
   var btnDay = document.getElementById('btn-mode-day');
-  var btnNvg = document.getElementById('btn-mode-night');
+  var btnNight = document.getElementById('btn-mode-night');
 
   function setTheme(theme) {
     body.setAttribute('data-theme', theme);
     btnDay.setAttribute('aria-pressed', String(theme === 'day'));
-    btnNvg.setAttribute('aria-pressed', String(theme === 'nvg'));
+    btnNight.setAttribute('aria-pressed', String(theme === 'night'));
     try { localStorage.setItem('landnav-theme', theme); } catch (e) { /* ignore */ }
   }
 
   btnDay.addEventListener('click', function () { setTheme('day'); });
-  btnNvg.addEventListener('click', function () { setTheme('nvg'); });
+  btnNight.addEventListener('click', function () { setTheme('night'); });
 
   var savedTheme = null;
   try { savedTheme = localStorage.getItem('landnav-theme'); } catch (e) { /* ignore */ }
-  if (savedTheme === 'day' || savedTheme === 'nvg') {
+  if (savedTheme === 'day' || savedTheme === 'night') {
     setTheme(savedTheme);
   } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    setTheme('nvg');
+    setTheme('night');
   }
 
   // ---------------------------------------------------------------
