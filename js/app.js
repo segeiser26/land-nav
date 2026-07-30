@@ -165,15 +165,21 @@
   var mgrsOutLat = document.getElementById('mgrs-out-lat');
   var mgrsOutLon = document.getElementById('mgrs-out-lon');
   var mgrsToLlError = document.getElementById('mgrs-to-ll-error');
+  var btnCopyLl = document.getElementById('btn-copy-ll');
+  var lastLl = null; // { lat, lon } raw numbers, for copying
 
   function doMgrsToLl() {
     mgrsToLlError.textContent = '';
     mgrsToLlReadout.style.display = 'none';
+    btnCopyLl.style.display = 'none';
     try {
       var ll = GEO.mgrsToLl(mgrsIn.value);
       mgrsOutLat.textContent = ll.lat.toFixed(6) + '°';
       mgrsOutLon.textContent = ll.lon.toFixed(6) + '°';
       mgrsToLlReadout.style.display = '';
+      lastLl = ll;
+      btnCopyLl.style.display = '';
+      btnCopyLl.textContent = 'Copy';
     } catch (e) {
       mgrsToLlError.textContent = e.message || 'Could not parse that MGRS grid.';
     }
@@ -181,6 +187,16 @@
 
   document.getElementById('btn-mgrs-to-ll').addEventListener('click', doMgrsToLl);
   mgrsIn.addEventListener('keydown', function (e) { if (e.key === 'Enter') doMgrsToLl(); });
+
+  btnCopyLl.addEventListener('click', function () {
+    if (!lastLl) return;
+    var text = lastLl.lat.toFixed(6) + ', ' + lastLl.lon.toFixed(6);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(function () { /* ignore */ });
+    }
+    btnCopyLl.textContent = 'Copied';
+    setTimeout(function () { btnCopyLl.textContent = 'Copy'; }, 1200);
+  });
 
   // ---------------------------------------------------------------
   // Range & Azimuth
