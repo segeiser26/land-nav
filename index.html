@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Land Nav — MGRS Coordinate Tools</title>
+<meta name="description" content="Offline MGRS ⇄ Lat/Long converter, and distance &amp; azimuth calculator, for land navigation.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-theme="day">
+<div class="wrap">
+
+  <header class="app-header">
+    <div class="brand">
+      <h1 class="brand-title">LAND<span class="hl">NAV</span></h1>
+      <div class="brand-sub">MGRS ⇄ Lat/Long &nbsp;·&nbsp; Range &amp; Azimuth</div>
+    </div>
+    <div class="mode-toggle">
+      <div class="mode-toggle-track" id="mode-toggle-track">
+        <div class="mode-toggle-thumb" aria-hidden="true"></div>
+        <button type="button" id="btn-mode-day" aria-pressed="true">DAY</button>
+        <button type="button" id="btn-mode-nvg" aria-pressed="false">NVG</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Land nav tools">
+    <button class="tab-btn" role="tab" id="tab-btn-convert" aria-selected="true" aria-controls="tab-convert">Converter</button>
+    <button class="tab-btn" role="tab" id="tab-btn-raz" aria-selected="false" aria-controls="tab-raz">Range &amp; Azimuth</button>
+  </div>
+
+  <!-- ============================= CONVERTER ============================= -->
+  <section class="tab-panel active" id="tab-convert" role="tabpanel" aria-labelledby="tab-btn-convert">
+
+    <div class="card">
+      <p class="card-title">MGRS Grid Precision</p>
+      <div class="seg-control" role="group" aria-label="MGRS output precision">
+        <button class="seg-btn" data-precision="3" aria-pressed="false">6-DIGIT (100m)</button>
+        <button class="seg-btn" data-precision="4" aria-pressed="true">8-DIGIT (10m)</button>
+      </div>
+      <p class="hint">Sets how many digits are shown when converting a lat/long into an MGRS grid. Doesn't affect MGRS ⇒ lat/long.</p>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Lat/Long → MGRS</p>
+      <div class="field-row">
+        <div class="field">
+          <label for="ll-lat">Latitude (decimal degrees)</label>
+          <input type="text" id="ll-lat" placeholder="e.g. 39.099912" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label for="ll-lon">Longitude (decimal degrees)</label>
+          <input type="text" id="ll-lon" placeholder="e.g. -94.581213" inputmode="decimal">
+        </div>
+      </div>
+      <button class="btn" id="btn-ll-to-mgrs">Convert to MGRS</button>
+      <div class="readout" id="ll-to-mgrs-readout">
+        <span class="readout-empty">Grid will appear here.</span>
+      </div>
+      <div class="error-msg" id="ll-to-mgrs-error"></div>
+    </div>
+
+    <div class="card">
+      <p class="card-title">MGRS → Lat/Long</p>
+      <div class="field-row">
+        <div class="field" style="flex: 2 1 320px;">
+          <label for="mgrs-in">MGRS Grid Coordinate</label>
+          <input type="text" id="mgrs-in" placeholder="e.g. 15S UD 63269 29054" autocapitalize="characters">
+        </div>
+      </div>
+      <button class="btn" id="btn-mgrs-to-ll">Convert to Lat/Long</button>
+      <div class="results-grid" id="mgrs-to-ll-readout" style="display:none;">
+        <div class="result-box">
+          <span class="k">Latitude</span>
+          <span class="v accent" id="mgrs-out-lat">—</span>
+        </div>
+        <div class="result-box">
+          <span class="k">Longitude</span>
+          <span class="v accent" id="mgrs-out-lon">—</span>
+        </div>
+      </div>
+      <div class="error-msg" id="mgrs-to-ll-error"></div>
+    </div>
+
+  </section>
+
+  <!-- ============================ RANGE & AZIMUTH ========================= -->
+  <section class="tab-panel" id="tab-raz" role="tabpanel" aria-labelledby="tab-btn-raz">
+
+    <div class="card">
+      <p class="card-title">Point A (Start)</p>
+      <div class="field-row">
+        <div class="field">
+          <label for="raz-a">MGRS or Lat, Long</label>
+          <input type="text" id="raz-a" placeholder="15S UD 63269 29054  or  39.0999, -94.5812" autocapitalize="characters">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Point B (Destination)</p>
+      <div class="field-row">
+        <div class="field">
+          <label for="raz-b">MGRS or Lat, Long</label>
+          <input type="text" id="raz-b" placeholder="15S UD 64000 29500  or  39.1050, -94.5700" autocapitalize="characters">
+        </div>
+      </div>
+      <button class="btn" id="btn-calc-raz">Calculate Range &amp; Azimuth</button>
+      <div class="error-msg" id="raz-error"></div>
+    </div>
+
+    <div class="card" id="raz-results-card" style="display:none;">
+      <p class="card-title">Result</p>
+      <div class="raz-layout">
+        <div>
+          <div class="results-grid">
+            <div class="result-box">
+              <span class="k">Distance</span>
+              <span class="v accent" id="raz-distance">—</span>
+            </div>
+            <div class="result-box">
+              <span class="k">Azimuth (A → B)</span>
+              <span class="v accent" id="raz-azimuth">—</span>
+            </div>
+            <div class="result-box">
+              <span class="k">Back Azimuth (B → A)</span>
+              <span class="v" id="raz-back-azimuth">—</span>
+            </div>
+            <div class="result-box">
+              <span class="k">Distance Units</span>
+              <span class="v">
+                <span class="unit-toggle seg-control" role="group" aria-label="Distance units">
+                  <button class="seg-btn" data-dist-unit="m" aria-pressed="true">M</button>
+                  <button class="seg-btn" data-dist-unit="km" aria-pressed="false">KM</button>
+                  <button class="seg-btn" data-dist-unit="mi" aria-pressed="false">MI</button>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="dial-wrap">
+          <svg class="dial-svg" viewBox="0 0 200 200" role="img" aria-label="Compass dial showing azimuth from Point A to Point B">
+            <circle cx="100" cy="100" r="92" fill="none" stroke="var(--border-strong)" stroke-width="2"/>
+            <circle cx="100" cy="100" r="70" fill="none" stroke="var(--border)" stroke-width="1"/>
+            <g stroke="var(--border)" stroke-width="1">
+              <line x1="100" y1="8" x2="100" y2="18"/>
+              <line x1="100" y1="182" x2="100" y2="192"/>
+              <line x1="8" y1="100" x2="18" y2="100"/>
+              <line x1="182" y1="100" x2="192" y2="100"/>
+            </g>
+            <text x="100" y="24" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--text-dim)">N</text>
+            <text x="100" y="182" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--text-dim)">S</text>
+            <text x="14" y="104" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--text-dim)">W</text>
+            <text x="186" y="104" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="var(--text-dim)">E</text>
+            <g class="dial-needle" id="dial-needle">
+              <line x1="100" y1="100" x2="100" y2="26" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+              <polygon points="100,20 94,34 106,34" fill="var(--accent)"/>
+              <line x1="100" y1="100" x2="100" y2="150" stroke="var(--text-dim)" stroke-width="3" stroke-linecap="round"/>
+            </g>
+            <circle cx="100" cy="100" r="5" fill="var(--text)"/>
+          </svg>
+          <div class="dial-readout">
+            <span id="dial-az-value">—</span>
+            <div class="unit-toggle seg-control" role="group" aria-label="Azimuth units" style="margin-top:6px;">
+              <button class="seg-btn" data-az-unit="deg" aria-pressed="true">DEG</button>
+              <button class="seg-btn" data-az-unit="mil" aria-pressed="false">MILS</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <footer class="app-footer">
+    <span>WGS84 · MGRS via UTM projection · Distance &amp; azimuth via Vincenty geodesic inverse</span>
+    <span>Runs entirely in the browser — no data leaves this device</span>
+  </footer>
+
+</div>
+
+<script src="js/geo.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
