@@ -251,7 +251,7 @@
     razAzimuthEl.textContent = formatAzimuth(lastResult.azimuth);
     razBackAzimuthEl.textContent = formatAzimuth(lastResult.azimuthBack);
     dialAzValue.textContent = formatAzimuth(lastResult.azimuth);
-    dialNeedle.setAttribute('transform', 'rotate(' + lastResult.azimuth + ' 100 100)');
+    dialNeedle.style.transform = 'rotate(' + lastResult.azimuth + 'deg)';
 
     var hasDecl = typeof lastResult.declination === 'number' && !isNaN(lastResult.declination);
     if (hasDecl) {
@@ -265,7 +265,7 @@
       razMagBackBox.style.display = '';
       dialNeedleMag.style.display = '';
       dialLegend.style.display = '';
-      dialNeedleMag.setAttribute('transform', 'rotate(' + magAz + ' 100 100)');
+      dialNeedleMag.style.transform = 'rotate(' + magAz + 'deg)';
     } else {
       razMagBox.style.display = 'none';
       razMagBackBox.style.display = 'none';
