@@ -187,13 +187,20 @@
   // ---------------------------------------------------------------
   var razA = document.getElementById('raz-a');
   var razB = document.getElementById('raz-b');
+  var razDecl = document.getElementById('raz-decl');
   var razError = document.getElementById('raz-error');
   var razResultsCard = document.getElementById('raz-results-card');
   var razDistanceEl = document.getElementById('raz-distance');
   var razAzimuthEl = document.getElementById('raz-azimuth');
   var razBackAzimuthEl = document.getElementById('raz-back-azimuth');
+  var razMagBox = document.getElementById('raz-mag-box');
+  var razMagBackBox = document.getElementById('raz-mag-back-box');
+  var razMagAzimuthEl = document.getElementById('raz-mag-azimuth');
+  var razMagBackAzimuthEl = document.getElementById('raz-mag-back-azimuth');
   var dialNeedle = document.getElementById('dial-needle');
+  var dialNeedleMag = document.getElementById('dial-needle-mag');
   var dialAzValue = document.getElementById('dial-az-value');
+  var dialLegend = document.getElementById('dial-legend');
 
   var MGRS_RE = /^\d{1,2}\s*[C-HJ-NP-X]\s*[A-HJ-NP-Z]{2}\s*\d+/i;
 
@@ -236,6 +243,8 @@
     return deg.toFixed(1) + '°';
   }
 
+  function norm360(deg) { return ((deg % 360) + 360) % 360; }
+
   function renderResults() {
     if (!lastResult) return;
     razDistanceEl.textContent = formatDistance(lastResult.distanceMeters);
@@ -243,26 +252,55 @@
     razBackAzimuthEl.textContent = formatAzimuth(lastResult.azimuthBack);
     dialAzValue.textContent = formatAzimuth(lastResult.azimuth);
     dialNeedle.setAttribute('transform', 'rotate(' + lastResult.azimuth + ' 100 100)');
+
+    var hasDecl = typeof lastResult.declination === 'number' && !isNaN(lastResult.declination);
+    if (hasDecl) {
+      // Magnetic azimuth = grid/true azimuth minus easterly declination
+      // (a positive/East declination is subtracted; negative/West adds).
+      var magAz = norm360(lastResult.azimuth - lastResult.declination);
+      var magBackAz = norm360(lastResult.azimuthBack - lastResult.declination);
+      razMagAzimuthEl.textContent = formatAzimuth(magAz);
+      razMagBackAzimuthEl.textContent = formatAzimuth(magBackAz);
+      razMagBox.style.display = '';
+      razMagBackBox.style.display = '';
+      dialNeedleMag.style.display = '';
+      dialLegend.style.display = '';
+      dialNeedleMag.setAttribute('transform', 'rotate(' + magAz + ' 100 100)');
+    } else {
+      razMagBox.style.display = 'none';
+      razMagBackBox.style.display = 'none';
+      dialNeedleMag.style.display = 'none';
+      dialLegend.style.display = 'none';
+    }
   }
 
   function doCalcRaz() {
     razError.textContent = '';
-    razResultsCard.style.display = 'none';
     try {
       var a = parsePoint(razA.value);
       var b = parsePoint(razB.value);
       var r = GEO.vincentyInverse(a.lat, a.lon, b.lat, b.lon);
-      lastResult = { distanceMeters: r.distance, azimuth: r.azimuth, azimuthBack: r.azimuthBack };
+      var declRaw = razDecl.value.trim();
+      var decl = declRaw === '' ? NaN : parseDecimal(declRaw);
+      if (declRaw !== '' && isNaN(decl)) {
+        throw new Error('Declination must be a number (e.g. -8.5 or 6.2), or left blank.');
+      }
+      lastResult = { distanceMeters: r.distance, azimuth: r.azimuth, azimuthBack: r.azimuthBack, declination: decl };
       renderResults();
-      razResultsCard.style.display = '';
     } catch (e) {
       razError.textContent = e.message || 'Could not calculate range & azimuth.';
     }
   }
 
   document.getElementById('btn-calc-raz').addEventListener('click', doCalcRaz);
-  [razA, razB].forEach(function (el) {
+  [razA, razB, razDecl].forEach(function (el) {
     el.addEventListener('keydown', function (e) { if (e.key === 'Enter') doCalcRaz(); });
+  });
+  razDecl.addEventListener('input', function () {
+    if (!lastResult) return;
+    var declRaw = razDecl.value.trim();
+    lastResult.declination = declRaw === '' ? NaN : parseDecimal(declRaw);
+    renderResults();
   });
 
   document.querySelectorAll('.seg-btn[data-dist-unit]').forEach(function (btn) {
