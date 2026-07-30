@@ -30,7 +30,7 @@
   --font-mono: 'IBM Plex Mono', monospace;
 }
 
-[data-theme='night'] {
+[data-theme='nvg'] {
   --bg: #0f120c;
   --bg-grid-line: rgba(214, 69, 51, 0.06);
   --panel: #171b11;
