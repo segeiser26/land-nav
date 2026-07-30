@@ -2,28 +2,28 @@
   'use strict';
 
   // ---------------------------------------------------------------
-  // Theme (DAY / NIGHT)
+  // Theme (DAY / NIGHT) — internal value stays 'nvg', only the button label changed
   // ---------------------------------------------------------------
   var body = document.body;
   var btnDay = document.getElementById('btn-mode-day');
-  var btnNight = document.getElementById('btn-mode-night');
+  var btnNvg = document.getElementById('btn-mode-nvg');
 
   function setTheme(theme) {
     body.setAttribute('data-theme', theme);
     btnDay.setAttribute('aria-pressed', String(theme === 'day'));
-    btnNight.setAttribute('aria-pressed', String(theme === 'night'));
+    btnNvg.setAttribute('aria-pressed', String(theme === 'nvg'));
     try { localStorage.setItem('landnav-theme', theme); } catch (e) { /* ignore */ }
   }
 
   btnDay.addEventListener('click', function () { setTheme('day'); });
-  btnNight.addEventListener('click', function () { setTheme('night'); });
+  btnNvg.addEventListener('click', function () { setTheme('nvg'); });
 
   var savedTheme = null;
   try { savedTheme = localStorage.getItem('landnav-theme'); } catch (e) { /* ignore */ }
-  if (savedTheme === 'day' || savedTheme === 'night') {
+  if (savedTheme === 'day' || savedTheme === 'nvg') {
     setTheme(savedTheme);
   } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    setTheme('night');
+    setTheme('nvg');
   }
 
   // ---------------------------------------------------------------
